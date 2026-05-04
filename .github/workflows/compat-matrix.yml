@@ -50,12 +50,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Mark workspace safe for git
-        # actions/checkout sets the workspace dir owner to the runner UID,
-        # which doesn't match the in-container UID. Without this, any
-        # composer post-script that shells out to git fails.
-        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
-
       - name: Pin WordPress to ${{ matrix.wp }}.x and install
         # `~X.Y.0` keeps us on this WP minor (admits patches only). The
         # `composer require` modifies the in-CI checkout's composer.json
