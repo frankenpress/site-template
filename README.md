@@ -1,5 +1,9 @@
 # fp-site-template
 
+> **Building a new site?** Click **[Use this template ↗](https://github.com/EightOEight/fp-site-template/generate)** on GitHub.
+> Your new repo will auto-customise (`composer.json`, `Dockerfile`) and publish its first image to GHCR within a couple of minutes.
+> Then follow [**Your first site**](https://docs.frankenpress.com/your-first-site) for the rest of the journey.
+
 **FrankenPress site template** — a [GitHub template repo](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template) for new WordPress sites running on the FrankenPress stack:
 
 - [`fp-runtime`](https://github.com/EightOEight/fp-runtime) (Caddy + FrankenPHP + Souin) as the base image

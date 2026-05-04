@@ -1,0 +1,111 @@
+name: template-cleanup
+
+# Runs once on the first push of a fork made from this template.
+# Substitutes the upstream-hardcoded strings, publishes the first GHCR
+# image so the new repo has something to `helm install`, and then
+# self-deletes — all in a single commit so this workflow only fires
+# once on the initial fork.
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  cleanup:
+    # Skip on the upstream template itself — only fire in forked copies.
+    # `is_template` reflects the SOURCE repo's flag; forks created from
+    # a template have it set to false.
+    if: ${{ !github.event.repository.is_template && github.repository != 'EightOEight/fp-site-template' }}
+    runs-on: ubuntu-latest
+    env:
+      OWNER_REPO: ${{ github.repository }}
+      OWNER: ${{ github.repository_owner }}
+      REPO: ${{ github.event.repository.name }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Substitute placeholders
+        id: substitute
+        run: |
+          set -euo pipefail
+          OWNER_LOWER="$(echo "${OWNER}" | tr '[:upper:]' '[:lower:]')"
+          REPO_LOWER="$(echo "${REPO}" | tr '[:upper:]' '[:lower:]')"
+
+          # composer.json — name (must be lowercase per composer schema),
+          # description, homepage, support.issues, support.source.
+          sed -i \
+            -e "s|\"name\": \"eightoeight/fp-site-template\"|\"name\": \"${OWNER_LOWER}/${REPO_LOWER}\"|" \
+            -e "s|FrankenPress site template — Bedrock-layout WordPress site preconfigured for the FrankenPress stack (Caddy + FrankenPHP + Souin + S3).|WordPress site running on the FrankenPress stack.|" \
+            -e "s|https://github.com/EightOEight/fp-site-template/issues|https://github.com/${OWNER}/${REPO}/issues|g" \
+            -e "s|https://github.com/EightOEight/fp-site-template|https://github.com/${OWNER}/${REPO}|g" \
+            composer.json
+
+          # Dockerfile — OCI image.source label.
+          sed -i \
+            -e "s|org.opencontainers.image.source=\"https://github.com/EightOEight/fp-site-template\"|org.opencontainers.image.source=\"https://github.com/${OWNER}/${REPO}\"|" \
+            Dockerfile
+
+          # Stage the cleanup workflow for deletion in the same commit.
+          git rm .github/workflows/template-cleanup.yml
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build + push first image
+        id: image
+        continue-on-error: true
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64
+          tags: |
+            ghcr.io/${{ github.repository }}:latest
+            ghcr.io/${{ github.repository }}:initial
+          build-args: |
+            SOURCE_COMMIT=${{ github.sha }}
+            BUILD_DATE=${{ github.event.repository.updated_at }}
+
+      - name: Commit substitutions + workflow self-delete
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add composer.json Dockerfile
+          if git diff --cached --quiet; then
+            echo "nothing to commit — substitutions already applied?"
+            exit 0
+          fi
+          git commit -m "chore: initialize from fp-site-template
+
+          Auto-customised by template-cleanup.yml on first push:
+          - composer.json: name, description, homepage, support URLs
+          - Dockerfile: org.opencontainers.image.source label
+          - Removed .github/workflows/template-cleanup.yml (one-shot)"
+          git push origin HEAD:main
+
+      - name: Job summary
+        if: always()
+        run: |
+          {
+            echo "### Template cleanup complete"
+            echo ""
+            echo "- **Repo:** \`${OWNER_REPO}\`"
+            echo "- **First image:** \`ghcr.io/${OWNER_REPO}:latest\` (build outcome: ${{ steps.image.outcome }})"
+            echo ""
+            echo "Next: clone the repo locally and follow https://docs.frankenpress.com/your-first-site"
+          } >>"$GITHUB_STEP_SUMMARY"
