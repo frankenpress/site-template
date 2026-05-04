@@ -7,6 +7,8 @@
 - [`humanmade/s3-uploads`](https://github.com/humanmade/S3-Uploads) for media offload (transitive dep of fp-mu-plugin)
 - Bedrock-style layout (`web/wp` for core, `web/app` for content, `config/` for env-driven settings)
 
+**Documentation:** <https://docs.frankenpress.com/components/fp-site-template>
+
 ## Quickstart
 
 1. **Create your repo from this template** — click ["Use this template"](https://github.com/EightOEight/fp-site-template/generate) on GitHub. Pick a name (e.g. `my-site`).
