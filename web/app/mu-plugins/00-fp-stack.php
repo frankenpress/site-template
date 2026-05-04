@@ -26,7 +26,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( file_exists( $composer = dirname( ABSPATH, 2 ) . '/vendor/autoload.php' ) ) {
+$composer = dirname( ABSPATH, 2 ) . '/vendor/autoload.php';
+if ( file_exists( $composer ) ) {
 	require_once $composer;
 }
 

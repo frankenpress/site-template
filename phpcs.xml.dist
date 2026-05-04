@@ -2,10 +2,14 @@
 <ruleset name="fp-site-template">
     <description>Coding standards for site-specific PHP (config + custom mu-plugins).</description>
 
+    <!--
+        Scope: only PHP we actually commit to the repo.
+        Composer-installed plugins/themes/mu-plugins land under web/app/* on CI
+        but aren't ours to lint. If you add custom code under those dirs, add
+        it here explicitly (e.g. <file>web/app/mu-plugins/my-plugin</file>).
+    -->
     <file>config</file>
-    <file>web/app/mu-plugins</file>
-    <file>web/app/plugins</file>
-    <file>web/app/themes</file>
+    <file>web/app/mu-plugins/00-fp-stack.php</file>
 
     <exclude-pattern>*/vendor/*</exclude-pattern>
     <exclude-pattern>*/wp/*</exclude-pattern>
@@ -19,6 +23,8 @@
         <exclude name="WordPress.Files.FileName"/>
         <exclude name="WordPress.PHP.YodaConditions"/>
         <exclude name="PSR12.Files.OpenTag.NotAlone"/>
+        <!-- Bedrock idiom: env( 'X' ) ?: 'default'. Allow short ternary. -->
+        <exclude name="Universal.Operators.DisallowShortTernary"/>
     </rule>
 
     <config name="testVersion" value="8.2-"/>

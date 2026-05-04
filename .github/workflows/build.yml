@@ -59,16 +59,19 @@ jobs:
 
       - name: Smoke test the built image
         run: |
-          docker run --rm fp-site:test sh -c "
-            set -e
+          docker run --rm fp-site:test sh -c '
+            set -ex
             test -f /app/web/wp/wp-blog-header.php
             test -f /app/web/index.php
             test -f /app/web/wp-config.php
             test -f /app/config/application.php
-            test -d /app/web/app/mu-plugins/fp/src
+            # composer-installed fp-mu-plugin (the runtime-baked /fp dir is
+            # removed in the final stage of the Dockerfile).
+            test -d /app/web/app/mu-plugins/fp-mu-plugin/src
+            test ! -d /app/web/app/mu-plugins/fp
             test -d /app/vendor/humanmade/s3-uploads
-            php -r 'require \"/app/vendor/autoload.php\"; var_dump(class_exists(\"FrankenPress\\\\MuPlugin\"));'
-          "
+            php -r "require \"/app/vendor/autoload.php\"; if ( ! class_exists( \"FrankenPress\\\\MuPlugin\" ) ) { fwrite( STDERR, \"FrankenPress\\\\MuPlugin not autoloaded\\n\" ); exit( 1 ); }"
+          '
 
       - name: Push (multi-tag)
         if: github.event_name != 'pull_request'
