@@ -32,6 +32,15 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
+      - name: Compute lowercase ghcr path
+        id: ghcr
+        run: |
+          set -euo pipefail
+          # GHCR requires lowercase repository names; github.repository
+          # preserves the user's typed case.
+          GHCR_PATH="$(echo "${OWNER_REPO}" | tr '[:upper:]' '[:lower:]')"
+          echo "path=${GHCR_PATH}" >>"$GITHUB_OUTPUT"
+
       - name: Substitute placeholders
         run: |
           set -euo pipefail
@@ -72,8 +81,8 @@ jobs:
           secrets: |
             github_token=${{ secrets.GITHUB_TOKEN }}
           tags: |
-            ghcr.io/${{ github.repository }}:latest
-            ghcr.io/${{ github.repository }}:initial
+            ghcr.io/${{ steps.ghcr.outputs.path }}:latest
+            ghcr.io/${{ steps.ghcr.outputs.path }}:initial
           build-args: |
             SOURCE_COMMIT=${{ github.sha }}
             BUILD_DATE=${{ github.event.repository.updated_at }}
@@ -104,7 +113,7 @@ jobs:
             echo "### Template cleanup complete"
             echo ""
             echo "- **Repo:** \`${OWNER_REPO}\`"
-            echo "- **First image:** \`ghcr.io/${OWNER_REPO}:latest\` (build outcome: ${{ steps.image.outcome }})"
+            echo "- **First image:** \`ghcr.io/${{ steps.ghcr.outputs.path }}:latest\` (build outcome: ${{ steps.image.outcome }})"
             echo ""
             echo "Next: clone the repo locally and follow https://docs.frankenpress.com/your-first-site"
           } >>"$GITHUB_STEP_SUMMARY"
