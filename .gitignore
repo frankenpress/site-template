@@ -25,6 +25,7 @@ web/app/themes/*
 web/app/mu-plugins/*
 !web/app/mu-plugins/.gitkeep
 !web/app/mu-plugins/00-fp-stack.php
+!web/app/mu-plugins/s3-uploads.php
 
 # Environment + secrets
 .env

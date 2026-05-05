@@ -64,6 +64,9 @@
   "extra": {
     "wordpress-install-dir": "web/wp",
     "installer-paths": {
+      "web/app/mu-plugins/s3-uploads/": [
+        "humanmade/s3-uploads"
+      ],
       "web/app/mu-plugins/{$name}/": [
         "type:wordpress-muplugin"
       ],

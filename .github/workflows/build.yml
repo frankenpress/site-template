@@ -106,9 +106,12 @@ jobs:
             # removed in the final stage of the Dockerfile).
             test -d /app/web/app/mu-plugins/fp-mu-plugin/src
             test ! -d /app/web/app/mu-plugins/fp
-            # humanmade/s3-uploads is type:wordpress-plugin → composer/installers
-            # redirects it to web/app/plugins/, not vendor/.
-            test -d /app/web/app/plugins/s3-uploads
+            # humanmade/s3-uploads is type:wordpress-plugin but composer.json
+            # redirects it to mu-plugins/ via per-package installer-paths so it
+            # appears as Must-Use in wp-admin (loaded by web/app/mu-plugins/s3-uploads.php).
+            test -d /app/web/app/mu-plugins/s3-uploads
+            test -f /app/web/app/mu-plugins/s3-uploads.php
+            test ! -d /app/web/app/plugins/s3-uploads
             php -r "require \"/app/vendor/autoload.php\"; if ( ! class_exists( \"FrankenPress\\\\MuPlugin\" ) ) { fwrite( STDERR, \"FrankenPress\\\\MuPlugin not autoloaded\\n\" ); exit( 1 ); }"
           '
 
