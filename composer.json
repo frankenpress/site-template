@@ -39,7 +39,7 @@
     "roots/wordpress": "^6.8",
     "roots/wp-config": "1.0.0",
     "wpackagist-theme/twentytwentyfive": "^1.4",
-    "eightoeight/fp-mu-plugin": "^0.1.1"
+    "eightoeight/fp-mu-plugin": "^0.5.0"
   },
   "require-dev": {
     "roave/security-advisories": "dev-latest",
