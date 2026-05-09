@@ -7,7 +7,7 @@
 **FrankenPress site template** — a [GitHub template repo](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template) for new WordPress sites running on the FrankenPress stack:
 
 - [`fp-runtime`](https://github.com/EightOEight/fp-runtime) (Caddy + FrankenPHP + Souin) as the base image
-- [`fp-mu-plugin`](https://github.com/EightOEight/fp-mu-plugin) (S3 uploads bootstrap + Souin invalidator) baked in
+- [`fp-mu-plugin`](https://github.com/EightOEight/fp-mu-plugin) (S3 uploads bootstrap, Souin invalidator, Site Health overrides, SMTP mailer) baked in
 - [`humanmade/s3-uploads`](https://github.com/humanmade/S3-Uploads) for media offload (transitive dep of fp-mu-plugin)
 - Bedrock-style layout (`web/wp` for core, `web/app` for content, `config/` for env-driven settings)
 
@@ -122,6 +122,6 @@ The image is then available at `ghcr.io/<your-org>/<your-site>:v1.0.0`.
 | Repo | Purpose |
 |---|---|
 | [`fp-runtime`](https://github.com/EightOEight/fp-runtime) | Base container image |
-| [`fp-mu-plugin`](https://github.com/EightOEight/fp-mu-plugin) | Must-use plugin (S3 bootstrap + Souin invalidator) |
+| [`fp-mu-plugin`](https://github.com/EightOEight/fp-mu-plugin) | Must-use plugin (S3 bootstrap + Souin invalidator + Site Health + SMTP) |
 | [`fp-site-template`](https://github.com/EightOEight/fp-site-template) (this repo) | GitHub template for new sites |
 | [`fp-charts`](https://github.com/EightOEight/fp-charts) | Helm chart `fp-site` for Kubernetes deployment |
