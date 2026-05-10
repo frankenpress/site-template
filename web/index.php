@@ -2,7 +2,7 @@
 /**
  * WordPress front-controller (Bedrock layout).
  *
- * The fp-runtime image expects the docroot to be `/app/web` (configurable via
+ * The runtime image expects the docroot to be `/app/web` (configurable via
  * the `FP_DOCROOT` env var on the runtime).
  *
  * @package FrankenPress\Site

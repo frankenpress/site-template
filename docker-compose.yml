@@ -18,7 +18,7 @@ services:
       args:
         FP_RUNTIME_IMAGE: ${FP_RUNTIME_IMAGE:-ghcr.io/frankenpress/runtime}
         FP_RUNTIME_VERSION: ${FP_RUNTIME_VERSION:-php8.3}
-    image: ${FP_SITE_IMAGE:-fp-site:dev}
+    image: ${FP_SITE_IMAGE:-site:dev}
     ports:
       - "8080:8080"
       - "9145:9145"
@@ -38,16 +38,16 @@ services:
       SECURE_AUTH_SALT: ${SECURE_AUTH_SALT:-dev-salt}
       LOGGED_IN_SALT: ${LOGGED_IN_SALT:-dev-salt}
       NONCE_SALT: ${NONCE_SALT:-dev-salt}
-      # fp-runtime (Caddy + Souin)
+      # runtime (Caddy + Souin)
       REDIS_URL: redis:6379
-      # fp-mu-plugin: S3UploadsBootstrap → MinIO
+      # mu-plugin: S3UploadsBootstrap → MinIO
       FP_S3_BUCKET: ${FP_S3_BUCKET:-site-media}
       FP_S3_KEY: ${FP_S3_KEY:-minioadmin}
       FP_S3_SECRET: ${FP_S3_SECRET:-minioadmin}
       FP_S3_REGION: ${FP_S3_REGION:-us-east-1}
       FP_S3_ENDPOINT: ${FP_S3_ENDPOINT:-http://minio:9000}
       FP_S3_BUCKET_URL: ${FP_S3_BUCKET_URL:-http://localhost:9000/site-media}
-      # fp-mu-plugin: SouinInvalidator
+      # mu-plugin: SouinInvalidator
       FP_SOUIN_REDIS_HOST: redis
       FP_SOUIN_REDIS_PORT: "6379"
     depends_on:

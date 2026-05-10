@@ -2,10 +2,10 @@
 /**
  * Plugin Name:  S3 Uploads (FrankenPress)
  * Plugin URI:   https://github.com/humanmade/S3-Uploads
- * Description:  Loads humanmade/s3-uploads as a must-use plugin so it appears as Must-Use in wp-admin and runs on every request without admin-side activation. Configured by fp-mu-plugin's S3UploadsBootstrap from FP_S3_* env vars.
+ * Description:  Loads humanmade/s3-uploads as a must-use plugin so it appears as Must-Use in wp-admin and runs on every request without admin-side activation. Configured by mu-plugin's S3UploadsBootstrap from FP_S3_* env vars.
  * Version:      1.0.0
- * Author:       EightOEight
- * Author URI:   https://eightoeight.io
+ * Author:       FrankenPress
+ * Author URI:   https://frankenpress.com
  * License:      Apache-2.0
  *
  * The actual humanmade/s3-uploads code is composer-installed under
@@ -14,7 +14,7 @@
  * subdirs — this thin stub does the require so WP and wp-admin recognise
  * s3-uploads as a Must-Use plugin.
  *
- * fp-mu-plugin's S3UploadsBootstrap also require_once's the same file as a
+ * mu-plugin's S3UploadsBootstrap also require_once's the same file as a
  * defensive fallback. require_once is idempotent, so loading from both
  * paths is safe.
  *
