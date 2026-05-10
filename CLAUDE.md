@@ -7,7 +7,7 @@ Guidance for Claude Code when working in this repo OR in a fork of it.
 A **GitHub template repo** for new WordPress sites running on the
 FrankenPress stack. Bedrock-style layout. Builds an immutable site
 image you publish to your registry; deploys via the
-[`fp-charts`](https://github.com/EightOEight/fp-charts) Helm chart.
+[`charts`](https://github.com/frankenpress/charts) Helm chart.
 
 Click "Use this template" on GitHub to fork. Most of this guidance
 applies equally to the template and to forked sites.
@@ -77,7 +77,7 @@ CI builds + pushes `ghcr.io/<your-org>/<your-site>:v1.2.0` to your GHCR.
 Then in your cluster:
 
 ```bash
-helm upgrade mysite oci://ghcr.io/eightoeight/charts/fp-site \
+helm upgrade mysite oci://ghcr.io/frankenpress/charts/site \
   --namespace mysite --reuse-values \
   --set image.tag=v1.2.0
 ```
@@ -86,8 +86,8 @@ helm upgrade mysite oci://ghcr.io/eightoeight/charts/fp-site \
 
 | Repo | Purpose |
 |---|---|
-| [`fp-runtime`](https://github.com/EightOEight/fp-runtime) | Base container image (this Dockerfile's FROM) |
-| [`fp-mu-plugin`](https://github.com/EightOEight/fp-mu-plugin) | Must-use plugin (composer-installed by this repo) |
-| [`fp-site-template`](https://github.com/EightOEight/fp-site-template) (this repo) | GitHub template |
-| [`fp-charts`](https://github.com/EightOEight/fp-charts) | Helm chart for k8s deployment |
-| [`docs`](https://github.com/EightOEight/docs) | Mintlify docs site |
+| [`runtime`](https://github.com/frankenpress/runtime) | Base container image (this Dockerfile's FROM) |
+| [`mu-plugin`](https://github.com/frankenpress/mu-plugin) | Must-use plugin (composer-installed by this repo) |
+| [`site-template`](https://github.com/frankenpress/site-template) (this repo) | GitHub template |
+| [`charts`](https://github.com/frankenpress/charts) | Helm chart for k8s deployment |
+| [`docs`](https://github.com/frankenpress/docs) | Mintlify docs site |

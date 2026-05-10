@@ -50,15 +50,15 @@ jobs:
           # composer.json — name (lowercase per composer schema), description,
           # homepage, support.issues, support.source.
           sed -i \
-            -e "s|\"name\": \"eightoeight/fp-site-template\"|\"name\": \"${OWNER_LOWER}/${REPO_LOWER}\"|" \
+            -e "s|\"name\": \"frankenpress/site-template\"|\"name\": \"${OWNER_LOWER}/${REPO_LOWER}\"|" \
             -e "s|FrankenPress site template — Bedrock-layout WordPress site preconfigured for the FrankenPress stack (Caddy + FrankenPHP + Souin + S3).|WordPress site running on the FrankenPress stack.|" \
-            -e "s|https://github.com/EightOEight/fp-site-template/issues|https://github.com/${OWNER}/${REPO}/issues|g" \
-            -e "s|https://github.com/EightOEight/fp-site-template|https://github.com/${OWNER}/${REPO}|g" \
+            -e "s|https://github.com/frankenpress/site-template/issues|https://github.com/${OWNER}/${REPO}/issues|g" \
+            -e "s|https://github.com/frankenpress/site-template|https://github.com/${OWNER}/${REPO}|g" \
             composer.json
 
           # Dockerfile — OCI image.source label.
           sed -i \
-            -e "s|org.opencontainers.image.source=\"https://github.com/EightOEight/fp-site-template\"|org.opencontainers.image.source=\"https://github.com/${OWNER}/${REPO}\"|" \
+            -e "s|org.opencontainers.image.source=\"https://github.com/frankenpress/site-template\"|org.opencontainers.image.source=\"https://github.com/${OWNER}/${REPO}\"|" \
             Dockerfile
 
       - uses: docker/setup-qemu-action@v3

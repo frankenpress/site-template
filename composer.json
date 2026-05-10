@@ -1,9 +1,9 @@
 {
-  "name": "eightoeight/fp-site-template",
+  "name": "frankenpress/site-template",
   "type": "project",
   "license": "Apache-2.0",
   "description": "FrankenPress site template — Bedrock-layout WordPress site preconfigured for the FrankenPress stack (Caddy + FrankenPHP + Souin + S3).",
-  "homepage": "https://github.com/EightOEight/fp-site-template",
+  "homepage": "https://github.com/frankenpress/site-template",
   "authors": [
     {
       "name": "EightOEight Ltd.",
@@ -12,8 +12,8 @@
     }
   ],
   "support": {
-    "issues": "https://github.com/EightOEight/fp-site-template/issues",
-    "source": "https://github.com/EightOEight/fp-site-template"
+    "issues": "https://github.com/frankenpress/site-template/issues",
+    "source": "https://github.com/frankenpress/site-template"
   },
   "repositories": [
     {
@@ -26,7 +26,7 @@
     },
     {
       "type": "vcs",
-      "url": "https://github.com/EightOEight/fp-mu-plugin"
+      "url": "https://github.com/frankenpress/mu-plugin"
     }
   ],
   "require": {

@@ -151,7 +151,7 @@ jobs:
       # to the image digest via `cosign attest`. Combined with the cosign
       # signature in the next step, consumers can audit provenance:
       #   cosign tree   <registry>/<repo>:<tag>      → lists sigs + atts
-      #   cosign verify <registry>/<repo>:<tag> --certificate-identity-regexp '^https://github.com/EightOEight/' \
+      #   cosign verify <registry>/<repo>:<tag> --certificate-identity-regexp '^https://github.com/frankenpress/' \
       #                 --certificate-oidc-issuer https://token.actions.githubusercontent.com
       #
       # Note: syft scans whichever platform the runner pulls (linux/amd64

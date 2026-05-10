@@ -1,13 +1,13 @@
 # fp-site-template
 
-> **Building a new site?** Click **[Use this template ↗](https://github.com/EightOEight/fp-site-template/generate)** on GitHub.
+> **Building a new site?** Click **[Use this template ↗](https://github.com/frankenpress/site-template/generate)** on GitHub.
 > Your new repo will auto-customise (`composer.json`, `Dockerfile`) and publish its first image to GHCR within a couple of minutes.
 > Then follow [**Your first site**](https://docs.frankenpress.com/your-first-site) for the rest of the journey.
 
 **FrankenPress site template** — a [GitHub template repo](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template) for new WordPress sites running on the FrankenPress stack:
 
-- [`fp-runtime`](https://github.com/EightOEight/fp-runtime) (Caddy + FrankenPHP + Souin) as the base image
-- [`fp-mu-plugin`](https://github.com/EightOEight/fp-mu-plugin) (S3 uploads bootstrap, Souin invalidator, Site Health overrides, SMTP mailer) baked in
+- [`runtime`](https://github.com/frankenpress/runtime) (Caddy + FrankenPHP + Souin) as the base image
+- [`mu-plugin`](https://github.com/frankenpress/mu-plugin) (S3 uploads bootstrap, Souin invalidator, Site Health overrides, SMTP mailer) baked in
 - [`humanmade/s3-uploads`](https://github.com/humanmade/S3-Uploads) for media offload (transitive dep of fp-mu-plugin)
 - Bedrock-style layout (`web/wp` for core, `web/app` for content, `config/` for env-driven settings)
 
@@ -15,7 +15,7 @@
 
 ## Quickstart
 
-1. **Create your repo from this template** — click ["Use this template"](https://github.com/EightOEight/fp-site-template/generate) on GitHub. Pick a name (e.g. `my-site`).
+1. **Create your repo from this template** — click ["Use this template"](https://github.com/frankenpress/site-template/generate) on GitHub. Pick a name (e.g. `my-site`).
 2. **Clone + bootstrap**:
    ```bash
    git clone git@github.com:<your-org>/<your-site>.git
@@ -121,7 +121,7 @@ The image is then available at `ghcr.io/<your-org>/<your-site>:v1.0.0`.
 
 | Repo | Purpose |
 |---|---|
-| [`fp-runtime`](https://github.com/EightOEight/fp-runtime) | Base container image |
-| [`fp-mu-plugin`](https://github.com/EightOEight/fp-mu-plugin) | Must-use plugin (S3 bootstrap + Souin invalidator + Site Health + SMTP) |
-| [`fp-site-template`](https://github.com/EightOEight/fp-site-template) (this repo) | GitHub template for new sites |
-| [`fp-charts`](https://github.com/EightOEight/fp-charts) | Helm chart `fp-site` for Kubernetes deployment |
+| [`runtime`](https://github.com/frankenpress/runtime) | Base container image |
+| [`mu-plugin`](https://github.com/frankenpress/mu-plugin) | Must-use plugin (S3 bootstrap + Souin invalidator + Site Health + SMTP) |
+| [`site-template`](https://github.com/frankenpress/site-template) (this repo) | GitHub template for new sites |
+| [`charts`](https://github.com/frankenpress/charts) | Helm chart `site` for Kubernetes deployment |
