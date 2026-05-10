@@ -1,4 +1,4 @@
-# fp-site-template
+# site-template
 
 > **Building a new site?** Click **[Use this template ↗](https://github.com/frankenpress/site-template/generate)** on GitHub.
 > Your new repo will auto-customise (`composer.json`, `Dockerfile`) and publish its first image to GHCR within a couple of minutes.
@@ -8,10 +8,10 @@
 
 - [`runtime`](https://github.com/frankenpress/runtime) (Caddy + FrankenPHP + Souin) as the base image
 - [`mu-plugin`](https://github.com/frankenpress/mu-plugin) (S3 uploads bootstrap, Souin invalidator, Site Health overrides, SMTP mailer) baked in
-- [`humanmade/s3-uploads`](https://github.com/humanmade/S3-Uploads) for media offload (transitive dep of fp-mu-plugin)
+- [`humanmade/s3-uploads`](https://github.com/humanmade/S3-Uploads) for media offload (transitive dep of mu-plugin)
 - Bedrock-style layout (`web/wp` for core, `web/app` for content, `config/` for env-driven settings)
 
-**Documentation:** <https://docs.frankenpress.com/components/fp-site-template>
+**Documentation:** <https://docs.frankenpress.com/components/site-template>
 
 ## Quickstart
 
@@ -40,7 +40,7 @@
 ```
 .
 ├── composer.json              # site dependencies (no WC, no theme picks)
-├── Dockerfile                 # multi-stage: composer build → fp-runtime
+├── Dockerfile                 # multi-stage: composer build → runtime
 ├── docker-compose.yml         # local dev: site + mariadb + redis + minio
 ├── .env.example               # all platform env vars with sane defaults
 ├── config/
@@ -55,7 +55,7 @@
     ├── wp/                    # WP core (composer-installed, gitignored)
     └── app/                   # wp-content
         ├── mu-plugins/
-        │   └── fp/            # baked by fp-runtime image — don't commit
+        │   └── fp/            # baked by runtime image — don't commit
         ├── plugins/           # composer require wpackagist-plugin/...
         └── themes/            # composer require wpackagist-theme/...
 ```
@@ -82,9 +82,9 @@ The full reference is in [`.env.example`](./.env.example). Highlights:
 | `WP_HOME`, `WP_SITEURL` | Site URLs (no trailing slash). |
 | `DB_*` | DB connection. Match `docker-compose.yml`'s defaults for local dev. |
 | 8× `*_KEY`/`*_SALT` | Auth keys & salts. Generate via [WP secret-key API](https://api.wordpress.org/secret-key/1.1/salt/) or `wp dotenv salts generate`. |
-| `FP_S3_BUCKET` etc. | S3 config consumed by `fp-mu-plugin`'s `S3UploadsBootstrap`. **Required** — the bootstrap *refuses uploads* if these are missing (no silent fallback to ephemeral local disk). |
-| `FP_SOUIN_REDIS_*` | Redis connection for `fp-mu-plugin`'s `SouinInvalidator`. Same Redis as the runtime's Souin HTTP cache. |
-| `REDIS_URL` | Used by `fp-runtime`'s Caddyfile for the Souin HTTP cache backend. |
+| `FP_S3_BUCKET` etc. | S3 config consumed by `mu-plugin`'s `S3UploadsBootstrap`. **Required** — the bootstrap *refuses uploads* if these are missing (no silent fallback to ephemeral local disk). |
+| `FP_SOUIN_REDIS_*` | Redis connection for `mu-plugin`'s `SouinInvalidator`. Same Redis as the runtime's Souin HTTP cache. |
+| `REDIS_URL` | Used by `runtime`'s Caddyfile for the Souin HTTP cache backend. |
 
 ## Hardening (the lockdown)
 

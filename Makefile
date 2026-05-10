@@ -1,6 +1,6 @@
 # FrankenPress site — common dev tasks.
 
-IMAGE ?= fp-site:dev
+IMAGE ?= site:dev
 export FP_SITE_IMAGE ?= $(IMAGE)
 
 .PHONY: setup build up down logs shell wp lint test ci clean reset

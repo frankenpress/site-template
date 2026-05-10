@@ -9,11 +9,11 @@
  *                                                 deployment (Helm/compose)
  *   - DB_NAME / DB_USER / DB_PASSWORD / DB_HOST — DB connection
  *   - AUTH_KEY etc. (8 keys+salts)              — Secret-injected
- *   - FP_S3_*                                   — consumed by fp-mu-plugin's
+ *   - FP_S3_*                                   — consumed by mu-plugin's
  *                                                 S3UploadsBootstrap
- *   - FP_SOUIN_REDIS_*                          — consumed by fp-mu-plugin's
+ *   - FP_SOUIN_REDIS_*                          — consumed by mu-plugin's
  *                                                 SouinInvalidator
- *   - REDIS_URL                                 — consumed by fp-runtime's
+ *   - REDIS_URL                                 — consumed by runtime's
  *                                                 Caddyfile (Souin HTTP cache)
  *
  * The four lockdown constants are HARD-CODED (no env-var override) by

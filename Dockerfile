@@ -5,8 +5,8 @@
 # Multi-stage:
 #   1. composer install in a slim composer image (no PHP runtime tooling
 #      pulled into the final image).
-#   2. fp-runtime (Caddy + FrankenPHP + Souin + WP-friendly extensions +
-#      fp-mu-plugin baked) extended with the site's web/, config/ and
+#   2. runtime (Caddy + FrankenPHP + Souin + WP-friendly extensions +
+#      mu-plugin baked) extended with the site's web/, config/ and
 #      vendor/ tree.
 
 ARG FP_RUNTIME_IMAGE=ghcr.io/frankenpress/runtime
@@ -46,8 +46,8 @@ RUN composer dump-autoload --classmap-authoritative --no-dev
 # ---------- Runtime ----------
 FROM ${FP_RUNTIME_IMAGE}:${FP_RUNTIME_VERSION}
 
-# The runtime image bakes fp-mu-plugin at /app/web/app/mu-plugins/fp/.
-# This site composer-installs the canonical copy at mu-plugins/fp-mu-plugin/
+# The runtime image bakes mu-plugin at /app/web/app/mu-plugins/fp/.
+# This site composer-installs the canonical copy at mu-plugins/mu-plugin/
 # (loaded via roots/bedrock-autoloader). Remove the runtime-baked copy to
 # avoid duplicate code in the image — bedrock-autoloader wouldn't load it
 # anyway (no matching <dir>/<dir>.php pattern), so it's pure dead weight.
@@ -64,7 +64,7 @@ COPY --from=deps --chown=www-data:www-data /app/vendor /app/vendor
 # OCI labels (consumers override SOURCE_COMMIT / BUILD_DATE in CI).
 ARG SOURCE_COMMIT=""
 ARG BUILD_DATE=""
-LABEL org.opencontainers.image.title="fp-site" \
+LABEL org.opencontainers.image.title="site" \
       org.opencontainers.image.description="FrankenPress WordPress site image" \
       org.opencontainers.image.source="https://github.com/frankenpress/site-template" \
       org.opencontainers.image.licenses="Apache-2.0" \

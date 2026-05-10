@@ -3,7 +3,7 @@ name: compat-matrix
 # Lightweight PHP × WordPress compatibility check.
 #
 # Runs the supported runtime matrix (3 PHPs × 2 WP minors = 6 cells)
-# inside the actual fp-runtime image for that PHP — so the PHP version
+# inside the actual runtime image for that PHP — so the PHP version
 # under test is the same binary that ships to production. No image is
 # built or pushed; this is purely a regression smoke.
 #
@@ -51,7 +51,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Bootstrap composer
-        # The fp-runtime image is the production runtime — it ships PHP
+        # The runtime image is the production runtime — it ships PHP
         # and wp-cli but not composer (composer lives in the site image's
         # build stage, not the runtime). Pull a fresh composer phar so
         # we can resolve and install dependencies.
@@ -66,7 +66,7 @@ jobs:
         # `composer require` modifies the in-CI checkout's composer.json
         # — that's intentional; the workspace is ephemeral.
         env:
-          # Authenticate to api.github.com so the fp-mu-plugin VCS dep
+          # Authenticate to api.github.com so the mu-plugin VCS dep
           # doesn't hit the 60-req/hour anonymous rate limit on busy days.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |

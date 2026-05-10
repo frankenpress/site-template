@@ -102,7 +102,7 @@ jobs:
             echo "nothing to commit — substitutions already applied?"
             exit 0
           fi
-          git commit -m "chore: initialize from fp-site-template
+          git commit -m "chore: initialize from site-template
 
           Auto-customised by template-cleanup.yml on first push:
           - composer.json: name, description, homepage, support URLs
