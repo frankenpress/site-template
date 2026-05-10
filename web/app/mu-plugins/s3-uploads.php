@@ -5,7 +5,7 @@
  * Description:  Loads humanmade/s3-uploads as a must-use plugin so it appears as Must-Use in wp-admin and runs on every request without admin-side activation. Configured by mu-plugin's S3UploadsBootstrap from FP_S3_* env vars.
  * Version:      1.0.0
  * Author:       FrankenPress
- * Author URI:   https://frankenpress.io
+ * Author URI:   https://frankenpress.com
  * License:      Apache-2.0
  *
  * The actual humanmade/s3-uploads code is composer-installed under
