@@ -35,7 +35,7 @@ jobs:
       - id: check
         run: |
           set -euo pipefail
-          if [ "${{ github.repository }}" = "EightOEight/fp-site-template" ]; then
+          if [ "${{ github.repository }}" = "frankenpress/site-template" ]; then
             echo "should_build=true" >>"$GITHUB_OUTPUT"
           elif [ -f .github/workflows/template-cleanup.yml ]; then
             echo "should_build=false" >>"$GITHUB_OUTPUT"
