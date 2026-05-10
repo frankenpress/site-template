@@ -9,7 +9,7 @@
 #      fp-mu-plugin baked) extended with the site's web/, config/ and
 #      vendor/ tree.
 
-ARG FP_RUNTIME_IMAGE=ghcr.io/eightoeight/fp-runtime
+ARG FP_RUNTIME_IMAGE=ghcr.io/frankenpress/runtime
 ARG FP_RUNTIME_VERSION=php8.3
 
 # ---------- Composer build ----------

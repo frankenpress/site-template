@@ -42,7 +42,7 @@ jobs:
         wp: ["6.8", "6.9"]
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/eightoeight/fp-runtime:php${{ matrix.php }}
+      image: ghcr.io/frankenpress/runtime:php${{ matrix.php }}
       # The runtime image runs unprivileged in production, but for CI we
       # need root so composer can write to the workspace and install-php-
       # extensions / wp-cli paths stay accessible.

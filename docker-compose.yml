@@ -16,7 +16,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        FP_RUNTIME_IMAGE: ${FP_RUNTIME_IMAGE:-ghcr.io/eightoeight/fp-runtime}
+        FP_RUNTIME_IMAGE: ${FP_RUNTIME_IMAGE:-ghcr.io/frankenpress/runtime}
         FP_RUNTIME_VERSION: ${FP_RUNTIME_VERSION:-php8.3}
     image: ${FP_SITE_IMAGE:-fp-site:dev}
     ports:
