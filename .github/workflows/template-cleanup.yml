@@ -19,7 +19,7 @@ jobs:
     # Skip on the upstream template itself — only fire in forked copies.
     # `is_template` reflects this repo's flag; forks created from a
     # template have it set to false.
-    if: ${{ !github.event.repository.is_template && github.repository != 'EightOEight/fp-site-template' }}
+    if: ${{ !github.event.repository.is_template && github.repository != 'frankenpress/site-template' }}
     runs-on: ubuntu-latest
     env:
       OWNER_REPO: ${{ github.repository }}
