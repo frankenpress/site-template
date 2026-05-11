@@ -39,7 +39,7 @@
     "roots/wordpress": "^6.8",
     "roots/wp-config": "1.0.0",
     "wpackagist-theme/twentytwentyfive": "^1.4",
-    "frankenpress/mu-plugin": "^0.5.0"
+    "frankenpress/mu-plugin": "^0.6.0"
   },
   "require-dev": {
     "roave/security-advisories": "dev-latest",

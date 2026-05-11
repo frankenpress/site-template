@@ -16,11 +16,12 @@
  *   - REDIS_URL                                 — consumed by runtime's
  *                                                 Caddyfile (Souin HTTP cache)
  *
- * The four lockdown constants are HARD-CODED (no env-var override) by
- * design — there is no legitimate environment in which admin-side plugin
- * installation should be enabled on a containerized FrankenPress site,
- * because the image is the source of truth and any UI-installed plugin
- * vanishes on pod restart.
+ * The lockdown constants (`DISALLOW_FILE_EDIT`, `DISALLOW_FILE_MODS`)
+ * are gated on `KUBERNETES_SERVICE_HOST`: locked in-cluster (the image
+ * is the source of truth and UI-written files vanish on pod restart),
+ * relaxed out-of-cluster so local dev can drive premium-theme installers
+ * (e.g. The7's "Pre-Made Website Templates" importer) end-to-end and
+ * promote the result into the image + DB.
  *
  * @package FrankenPress\Site
  */
@@ -103,17 +104,39 @@ if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'https' === $_SERVER['HTTP_X
 }
 
 /**
- * Lockdown — HARD-CODED. The platform's image is the source of truth for
- * code; admin-side plugin/theme installation (or core update) would land
- * on ephemeral container disk and vanish on pod restart. Allowing it
- * silently breaks everything.
+ * Lockdown — gated on whether we're running inside Kubernetes.
  *
- * If a downstream needs to override these for a developer-only environment,
- * fork the template and remove these lines. The FrankenPress baseline
- * does not expose an env-var override.
+ * In-cluster (`KUBERNETES_SERVICE_HOST` is kubelet-injected on every
+ * pod): admin-side plugin/theme installs and the file editor are
+ * forbidden. The image is the source of truth; any UI-written file
+ * lands on ephemeral pod disk, vanishes on restart, and replicates
+ * inconsistently across replicas.
+ *
+ * Out-of-cluster (docker-compose, bare local): both are relaxed so a
+ * developer can drive premium-theme installers (e.g. The7's "Pre-Made
+ * Website Templates" importer) end-to-end, then promote the resulting
+ * code into the image and the resulting state into a DB snapshot.
+ * `KUBERNETES_SERVICE_HOST` can't appear in a local stack unless
+ * something fakes it, so prod can't accidentally land in the relaxed
+ * mode.
  */
-Config::define( 'DISALLOW_FILE_EDIT', true );
-Config::define( 'DISALLOW_FILE_MODS', true );
+$fp_in_kubernetes = (bool) getenv( 'KUBERNETES_SERVICE_HOST' );
+Config::define( 'DISALLOW_FILE_EDIT', $fp_in_kubernetes );
+Config::define( 'DISALLOW_FILE_MODS', $fp_in_kubernetes );
+
+/**
+ * Out-of-cluster only: force `WP_Filesystem` to "direct" mode. WP's
+ * autodetect (`get_filesystem_method()`) rejects "direct" when the file
+ * PHP creates is owned differently than `wp-admin/includes/file.php` —
+ * on the runtime image PHP runs as root but WP files are www-data, so
+ * the check fails and admin install flows fall back to a ftp/ssh2
+ * credentials prompt that AJAX endpoints can't satisfy. In-cluster the
+ * chart's securityContext makes the autodetect agree on its own, so we
+ * leave it alone there.
+ */
+if ( ! $fp_in_kubernetes ) {
+	Config::define( 'FS_METHOD', 'direct' );
+}
 
 /** Per-environment overrides. */
 $env_config = __DIR__ . '/environments/' . Config::get( 'WP_ENV' ) . '.php';
