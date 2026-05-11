@@ -50,3 +50,10 @@ dist/
 
 # Node / npm (some plugin builds use it)
 node_modules/
+
+# FrankenPress snapshot working dir (`make snapshot` output). The
+# manifest.yaml + manifest.json + composer-patch.json get committed
+# to a per-tenant `snapshots/<id>/` convention; the db.sql.gz blob
+# goes to a per-tenant S3 bucket. The fp-snapshots/ working dir is
+# local scratch.
+fp-snapshots/

@@ -3,7 +3,7 @@
 IMAGE ?= site:dev
 export FP_SITE_IMAGE ?= $(IMAGE)
 
-.PHONY: setup build up down logs shell wp lint test ci clean reset
+.PHONY: setup build up down logs shell wp lint test ci clean reset snapshot
 
 setup: ## composer install + initial WP install (idempotent)
 	@if [ ! -f .env ]; then cp .env.example .env && echo "created .env from .env.example"; fi
@@ -43,3 +43,18 @@ reset: down ## Wipe local state and rebuild from scratch
 
 clean: down ## Tear everything down + remove the dev image
 	docker rmi $(IMAGE) 2>/dev/null || true
+
+snapshot: ## Capture local site state into a FrankenPress snapshot. Required: SLUG=<id>. Optional: NOTE="..."
+	@if [ -z "$(SLUG)" ]; then echo "usage: make snapshot SLUG=<id> [NOTE=\"...\"]"; exit 1; fi
+	@mkdir -p fp-snapshots
+	@STAMP=$$(date -u +%Y%m%d-%H%M%S); \
+		DIR=/app/fp-snapshots/$(SLUG)-$$STAMP; \
+		docker compose exec site wp --allow-root --path=/app/web/wp \
+			fp snapshot --slug=$(SLUG) --note="$(NOTE)" --output-dir=$$DIR && \
+		echo "" && \
+		echo "snapshot written to fp-snapshots/$(SLUG)-$$STAMP/" && \
+		echo "review:" && \
+		echo "  cat fp-snapshots/$(SLUG)-$$STAMP/manifest.yaml" && \
+		echo "  cat fp-snapshots/$(SLUG)-$$STAMP/composer-patch.json" && \
+		echo "" && \
+		echo "next step: open a PR with the manifest + composer-patch (and upload the db.sql.gz blob to your tenant's snapshots bucket). See docs.frankenpress.com/operations/promote-from-local."
