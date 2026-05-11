@@ -51,9 +51,7 @@ dist/
 # Node / npm (some plugin builds use it)
 node_modules/
 
-# FrankenPress snapshot working dir (`make snapshot` output). The
-# manifest.yaml + manifest.json + composer-patch.json get committed
-# to a per-tenant `snapshots/<id>/` convention; the db.sql.gz blob
-# goes to a per-tenant S3 bucket. The fp-snapshots/ working dir is
-# local scratch.
-fp-snapshots/
+# FrankenPress snapshots are NOT gitignored. They live at
+# web/imports/<slug>/ and are committed alongside the rest of the
+# site code — the chart's install Job iterates them at deploy time
+# (mu-plugin v0.8.0+, charts v0.9.0+).

@@ -44,17 +44,18 @@ reset: down ## Wipe local state and rebuild from scratch
 clean: down ## Tear everything down + remove the dev image
 	docker rmi $(IMAGE) 2>/dev/null || true
 
-snapshot: ## Capture local site state into a FrankenPress snapshot. Required: SLUG=<id>. Optional: NOTE="..."
+snapshot: ## Capture local site state into web/imports/<slug>/. Required: SLUG=<id>. Optional: NOTE="..."
 	@if [ -z "$(SLUG)" ]; then echo "usage: make snapshot SLUG=<id> [NOTE=\"...\"]"; exit 1; fi
-	@mkdir -p fp-snapshots
-	@STAMP=$$(date -u +%Y%m%d-%H%M%S); \
-		DIR=/app/fp-snapshots/$(SLUG)-$$STAMP; \
-		docker compose exec site wp --allow-root --path=/app/web/wp \
-			fp snapshot --slug=$(SLUG) --note="$(NOTE)" --output-dir=$$DIR && \
-		echo "" && \
-		echo "snapshot written to fp-snapshots/$(SLUG)-$$STAMP/" && \
-		echo "review:" && \
-		echo "  cat fp-snapshots/$(SLUG)-$$STAMP/manifest.yaml" && \
-		echo "  cat fp-snapshots/$(SLUG)-$$STAMP/composer-patch.json" && \
-		echo "" && \
-		echo "next step: open a PR with the manifest + composer-patch (and upload the db.sql.gz blob to your tenant's snapshots bucket). See docs.frankenpress.com/operations/promote-from-local."
+	@docker compose exec site wp --allow-root --path=/app/web/wp \
+		fp snapshot --slug=$(SLUG) --note="$(NOTE)" --output-dir=/app/web/imports/$(SLUG)
+	@echo ""
+	@echo "snapshot written to web/imports/$(SLUG)/"
+	@echo "review:"
+	@echo "  cat web/imports/$(SLUG)/manifest.yaml"
+	@echo "  cat web/imports/$(SLUG)/composer-patch.json"
+	@echo ""
+	@echo "next steps (commit + open a site-repo PR):"
+	@echo "  composer require wpackagist-plugin/<slug>   # for any pending composer-patch entries"
+	@echo "  git add web/imports/$(SLUG)/ composer.json composer.lock"
+	@echo "  git commit -m 'Add $(SLUG) design import'"
+	@echo "  gh pr create"
