@@ -47,7 +47,7 @@ Local Docker Compose dev — site + MariaDB + Redis + MinIO on your machine. For
      --skip-email"
    ```
 
-6. **Log in** at http://localhost:8080/wp/wp-admin/. The "Update WordPress" / "Update Plugins" / "Update Themes" buttons should be **absent** — the lockdown is hard-coded in `config/application.php`.
+6. **Log in** at http://localhost:8080/wp/wp-admin/. In local dev the "Update WordPress" / "Update Plugins" / "Update Themes" buttons are **enabled** — handy for driving premium-theme installers end-to-end. In-cluster (where `KUBERNETES_SERVICE_HOST` is kubelet-injected), the same UIs are disabled because the image is the source of truth. The gate lives in `config/application.php`.
 
 7. **Upload an image** in the Media Library. It lands in MinIO at http://localhost:9001 (login `minioadmin` / `minioadmin`).
 
@@ -106,21 +106,22 @@ The full reference is in [`.env.example`](./.env.example). Highlights:
 
 ## Hardening (the lockdown)
 
-The four constants in `config/application.php` are hard-coded:
+`config/application.php` gates the two filesystem-mod constants on `KUBERNETES_SERVICE_HOST` — locked in-cluster, relaxed out-of-cluster so developers can drive premium-theme installers end-to-end:
 
 ```php
-Config::define( 'DISALLOW_FILE_EDIT', true );
-Config::define( 'DISALLOW_FILE_MODS', true );
+$fp_in_kubernetes = (bool) getenv( 'KUBERNETES_SERVICE_HOST' );
+Config::define( 'DISALLOW_FILE_EDIT', $fp_in_kubernetes );
+Config::define( 'DISALLOW_FILE_MODS', $fp_in_kubernetes );
 ```
 
-Plus `production.php`:
+Plus `production.php` (only loaded when `WP_ENV=production`, always on there):
 
 ```php
 Config::define( 'AUTOMATIC_UPDATER_DISABLED', true );
 Config::define( 'WP_AUTO_UPDATE_CORE', false );
 ```
 
-There is **no env-var override** by design. The container image is the source of truth — admin-side plugin installs would land on ephemeral disk and disappear on pod restart, replicating inconsistently across replicas. Hard-failing is the correct UX.
+The kubelet injects `KUBERNETES_SERVICE_HOST` on every pod; docker-compose and bare-local never set it. Prod can't accidentally land in the relaxed mode. In-cluster the image is still the source of truth — admin-side installs there would land on ephemeral disk and disappear on pod restart, replicating inconsistently across replicas, so hard-failing is the correct UX.
 
 ## CI / publishing
 

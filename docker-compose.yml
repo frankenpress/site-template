@@ -41,6 +41,12 @@ services:
       # runtime (Caddy + Souin)
       REDIS_URL: redis:6379
       # mu-plugin: S3UploadsBootstrap → MinIO
+      # Defaults to disabled out-of-cluster so admin install flows that
+      # write to wp_get_upload_dir() hit local disk — the s3:// stream
+      # wrapper doesn't support all ZipArchive / unzip_file ops. Set
+      # FP_S3_DISABLED=0 in .env to exercise the S3 upload path against
+      # MinIO.
+      FP_S3_DISABLED: "${FP_S3_DISABLED:-1}"
       FP_S3_BUCKET: ${FP_S3_BUCKET:-site-media}
       FP_S3_KEY: ${FP_S3_KEY:-minioadmin}
       FP_S3_SECRET: ${FP_S3_SECRET:-minioadmin}
