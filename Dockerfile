@@ -58,6 +58,14 @@ COPY --from=deps --chown=www-data:www-data /app/web/wp /app/web/wp
 COPY --from=deps --chown=www-data:www-data /app/web/wp-config.php /app/web/wp-config.php
 COPY --from=deps --chown=www-data:www-data /app/web/index.php /app/web/index.php
 COPY --from=deps --chown=www-data:www-data /app/web/app /app/web/app
+# FrankenPress snapshots — designer-captured content baked into the
+# image at build time. The chart's install Job (charts v0.9.0+)
+# iterates each subdir whose manifest.json exists and runs `wp fp
+# apply` per snapshot. Empty/.gitkeep-only is fine; the loop logs
+# "skipping (no manifest.json)" and moves on. Must be present even
+# when empty so the install Job's `if [ -d "$SNAPSHOTS_DIR" ]` gate
+# doesn't short-circuit.
+COPY --from=deps --chown=www-data:www-data /app/web/imports /app/web/imports
 COPY --from=deps --chown=www-data:www-data /app/config /app/config
 COPY --from=deps --chown=www-data:www-data /app/vendor /app/vendor
 
