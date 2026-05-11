@@ -104,7 +104,8 @@ if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'https' === $_SERVER['HTTP_X
 }
 
 /**
- * Lockdown — gated on whether we're running inside Kubernetes.
+ * Lockdown — gated on whether we're running inside Kubernetes, with
+ * a narrow per-Pod opt-out for the chart's install Job.
  *
  * In-cluster (`KUBERNETES_SERVICE_HOST` is kubelet-injected on every
  * pod): admin-side plugin/theme installs and the file editor are
@@ -119,10 +120,21 @@ if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'https' === $_SERVER['HTTP_X
  * `KUBERNETES_SERVICE_HOST` can't appear in a local stack unless
  * something fakes it, so prod can't accidentally land in the relaxed
  * mode.
+ *
+ * Narrow opt-out: `FP_ALLOW_FILE_MODS=1`. The charts `site` chart sets
+ * this on the install Job container ONLY (web Pods, wpcron Pods, and
+ * init containers never see it) so `wp plugin install` can run
+ * transiently inside the install Job — used by `wp fp apply` to bring
+ * up WP-Importer for the duration of snapshot apply. The plugin file
+ * lives in the Job pod's writable overlay only; mu-plugin's apply
+ * path deactivates the plugin before the Pod exits, so the next web
+ * Pod sees a clean `wp_options.active_plugins`.
  */
 $fp_in_kubernetes = (bool) getenv( 'KUBERNETES_SERVICE_HOST' );
-Config::define( 'DISALLOW_FILE_EDIT', $fp_in_kubernetes );
-Config::define( 'DISALLOW_FILE_MODS', $fp_in_kubernetes );
+$fp_allow_mods    = filter_var( getenv( 'FP_ALLOW_FILE_MODS' ), FILTER_VALIDATE_BOOLEAN );
+$fp_lockdown      = $fp_in_kubernetes && ! $fp_allow_mods;
+Config::define( 'DISALLOW_FILE_EDIT', $fp_lockdown );
+Config::define( 'DISALLOW_FILE_MODS', $fp_lockdown );
 
 /**
  * Out-of-cluster only: force `WP_Filesystem` to "direct" mode. WP's
