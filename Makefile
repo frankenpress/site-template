@@ -44,18 +44,16 @@ reset: down ## Wipe local state and rebuild from scratch
 clean: down ## Tear everything down + remove the dev image
 	docker rmi $(IMAGE) 2>/dev/null || true
 
-snapshot: ## Capture local site state into web/imports/<slug>/. Required: SLUG=<id>. Optional: NOTE="..."
-	@if [ -z "$(SLUG)" ]; then echo "usage: make snapshot SLUG=<id> [NOTE=\"...\"]"; exit 1; fi
-	@docker compose exec site wp --allow-root --path=/app/web/wp \
-		fp snapshot --slug=$(SLUG) --note="$(NOTE)" --output-dir=/app/web/imports/$(SLUG)
+snapshot: ## DEPRECATED — use `fp snapshot` from the host instead. See README.
+	@echo "Note: \`make snapshot\` is deprecated. The replacement is the host-side"
+	@echo "      \`fp snapshot\` CLI:"
 	@echo ""
-	@echo "snapshot written to web/imports/$(SLUG)/"
-	@echo "review:"
-	@echo "  cat web/imports/$(SLUG)/manifest.yaml"
-	@echo "  cat web/imports/$(SLUG)/composer-patch.json"
+	@echo "        brew install frankenpress/tap/fp"
+	@echo "        fp snapshot"
 	@echo ""
-	@echo "next steps (commit + open a site-repo PR):"
-	@echo "  composer require wpackagist-plugin/<slug>   # for any pending composer-patch entries"
-	@echo "  git add web/imports/$(SLUG)/ composer.json composer.lock"
-	@echo "  git commit -m 'Add $(SLUG) design import'"
-	@echo "  gh pr create"
+	@echo "      It captures + extracts the snapshot in one step (no quoting"
+	@echo "      traps, no separate docker-cp, prompts for slug + note)."
+	@echo "      See https://docs.frankenpress.com/designer-flow for the full"
+	@echo "      designer workflow. This target will be removed in a future"
+	@echo "      site-template release."
+	@exit 1
