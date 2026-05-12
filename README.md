@@ -53,6 +53,30 @@ Local Docker Compose dev — site + MariaDB + Redis + MinIO on your machine. For
 
 **Next:** [Your first site](https://docs.frankenpress.com/your-first-site) (fork → image → cluster) or [Customizing](https://docs.frankenpress.com/customizing) (add plugins and themes).
 
+## Designer flow — capturing local design state
+
+Once a designer has iterated locally (Site Editor templates, global styles, navigation, site identity), capture the state with the [`fp`](https://github.com/frankenpress/fp) host-side CLI:
+
+```bash
+brew install frankenpress/tap/fp
+cd path/to/your-site
+fp snapshot                # prompts for slug + note (Enter accepts the suggested defaults)
+```
+
+This writes `web/imports/<slug>/` containing the manifest, scoped templates / options / attachments, plus referenced upload binaries. Review the diff, commit, push, open a site-repo PR. The chart's install Job picks up the snapshot on the next image release and applies it on-cluster. Full walkthrough: [designer flow](https://docs.frankenpress.com/designer-flow).
+
+`fp` reads optional configuration from `frankenpress.toml` at the repo root. The empty file is valid (every default works for a site-template-shaped repo); a custom layout overrides via:
+
+```toml
+[snapshot]
+# project = "your-compose-project"     # default: basename(repo-root)
+# service = "site"                     # compose service running WordPress
+# output_dir = "web/imports"           # host-side, relative to repo root
+# container_output_dir = "/app/web/imports"
+```
+
+The legacy `make snapshot` target is retained for one release with a deprecation message pointing here — it will be removed in a follow-up.
+
 ## Layout (Bedrock)
 
 ```
