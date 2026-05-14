@@ -75,9 +75,18 @@ Lower-level Make targets (still supported; equivalent to what `fp init` orchestr
 ```bash
 git tag v1.2.0
 git push origin v1.2.0
+
+# After the tag-build workflow goes green:
+gh release create v1.2.0 --generate-notes
 ```
 
 CI builds + pushes `ghcr.io/<your-org>/<your-site>:v1.2.0` to your GHCR.
+The `gh release create` step publishes the GitHub Release page with
+auto-generated notes from the PR titles since the previous tag — don't
+skip it; the image push succeeds without it but the Releases feed goes
+stale, and that's been the most common drift point across this
+workspace.
+
 Then in your cluster:
 
 ```bash
