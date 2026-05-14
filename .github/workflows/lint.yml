@@ -22,6 +22,15 @@ jobs:
           extensions: mbstring, xml
           coverage: none
 
+      # Validate composer.json / composer.lock structure + license / version
+      # fields BEFORE installing. `--strict` catches issues `composer install`
+      # would silently work around (inconsistent lock, missing required keys,
+      # suggested-but-unwise patterns). `--no-check-publish` skips publishing-
+      # specific checks the site-template doesn't need (this isn't a published
+      # composer package; it's a site image source).
+      - name: composer validate
+        run: composer validate --strict --no-check-publish
+
       - name: Install dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
 
