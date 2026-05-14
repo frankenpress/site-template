@@ -61,6 +61,19 @@ jobs:
             -e "s|org.opencontainers.image.source=\"https://github.com/frankenpress/site-template\"|org.opencontainers.image.source=\"https://github.com/${OWNER}/${REPO}\"|" \
             Dockerfile
 
+          # README — render the tenant-shaped template over the
+          # template repo's own README, then drop the template file.
+          # The substitution tokens ({{OWNER}}, {{REPO}}, etc.) only
+          # exist in README.template.md, never in any path we expect
+          # to ship to a tenant — so a global -e is safe.
+          sed \
+            -e "s|{{OWNER_LOWER}}|${OWNER_LOWER}|g" \
+            -e "s|{{REPO_LOWER}}|${REPO_LOWER}|g" \
+            -e "s|{{OWNER}}|${OWNER}|g" \
+            -e "s|{{REPO}}|${REPO}|g" \
+            README.template.md > README.md
+          rm README.template.md
+
       - uses: docker/setup-qemu-action@v3
         with:
           platforms: linux/arm64
@@ -96,8 +109,8 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git rm .github/workflows/template-cleanup.yml
-          git add composer.json Dockerfile
+          git rm .github/workflows/template-cleanup.yml README.template.md
+          git add composer.json Dockerfile README.md
           if git diff --cached --quiet; then
             echo "nothing to commit — substitutions already applied?"
             exit 0
@@ -107,7 +120,9 @@ jobs:
           Auto-customised by template-cleanup.yml on first push:
           - composer.json: name, description, homepage, support URLs
           - Dockerfile: org.opencontainers.image.source label
-          - Removed .github/workflows/template-cleanup.yml (one-shot)"
+          - README.md: rendered from README.template.md with tenant
+            owner/repo placeholders filled in
+          - Removed .github/workflows/template-cleanup.yml + README.template.md (one-shot)"
           git push origin HEAD:main
 
       - name: Job summary
