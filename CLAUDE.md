@@ -58,6 +58,10 @@ Public docs: **<https://docs.frankenpress.com/components/site-template>**
 
 ## Running things
 
+Canonical onboarding (fresh clone + recovery from `down -v`):
+- `fp init` — bootstrap (composer install + `.env` scaffold) + stack up + WP install + apply latest snapshot. One command. Idempotent on re-runs. Requires `fp` ≥ v0.6.0 — install via `brew install frankenpress/tap/fp`.
+
+Lower-level Make targets (still supported; equivalent to what `fp init` orchestrates):
 - `make setup` — first-time bootstrap (composer install, `.env` from `.env.example`)
 - `make up` — start the local stack (site + db + redis + minio)
 - `make down` — stop and drop volumes
