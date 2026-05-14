@@ -127,6 +127,43 @@ jobs:
             php -r "require \"/app/vendor/autoload.php\"; if ( ! class_exists( \"FrankenPress\\\\MuPlugin\" ) ) { fwrite( STDERR, \"FrankenPress\\\\MuPlugin not autoloaded\\n\" ); exit( 1 ); }"
           '
 
+      # Lockdown contract — three cases against the same image:
+      #   (1) in-cluster, no opt-out             → all 3 flags true
+      #   (2) out-of-cluster                     → all 3 flags false
+      #   (3) in-cluster with FP_ALLOW_FILE_MODS → all 3 flags false (install Job path)
+      # Loads application.php directly via the composer autoloader (no
+      # WP bootstrap, no DB connect needed). Catches any future change
+      # that drops a flag from the gate or hard-codes one of the three.
+      - name: Smoke test the lockdown contract
+        run: |
+          set -euo pipefail
+
+          assert_flags() {
+            local label="$1" expected="$2"
+            shift 2
+            local out
+            out=$(docker run --rm "$@" site:test php -r '
+              require "/app/vendor/autoload.php";
+              require "/app/config/application.php";
+              foreach (["DISALLOW_FILE_EDIT", "DISALLOW_FILE_MODS", "DISALLOW_INDIRECT_FILE_MODS"] as $c) {
+                  $val = defined($c) ? constant($c) : null;
+                  echo $c . "=" . var_export($val, true) . "\n";
+              }
+            ')
+            echo "[$label] $out"
+            local want="DISALLOW_FILE_EDIT=$expected
+          DISALLOW_FILE_MODS=$expected
+          DISALLOW_INDIRECT_FILE_MODS=$expected"
+            if [ "$out" != "$want" ]; then
+              echo "FAIL [$label] expected all flags = $expected" >&2
+              exit 1
+            fi
+          }
+
+          assert_flags "in-cluster"      "true"  -e KUBERNETES_SERVICE_HOST=1
+          assert_flags "out-of-cluster"  "false"
+          assert_flags "install-Job opt-out" "false" -e KUBERNETES_SERVICE_HOST=1 -e FP_ALLOW_FILE_MODS=1
+
       - name: Push (multi-arch, multi-tag)
         if: github.event_name != 'pull_request'
         id: push

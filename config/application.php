@@ -41,6 +41,14 @@ if ( file_exists( $root_dir . '/.env' ) ) {
 			'DB_NAME',
 			'DB_USER',
 			'DB_PASSWORD',
+			'AUTH_KEY',
+			'SECURE_AUTH_KEY',
+			'LOGGED_IN_KEY',
+			'NONCE_KEY',
+			'AUTH_SALT',
+			'SECURE_AUTH_SALT',
+			'LOGGED_IN_SALT',
+			'NONCE_SALT',
 		)
 	);
 }
@@ -108,13 +116,18 @@ if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'https' === $_SERVER['HTTP_X
  * a narrow per-Pod opt-out for the chart's install Job.
  *
  * In-cluster (`KUBERNETES_SERVICE_HOST` is kubelet-injected on every
- * pod): admin-side plugin/theme installs and the file editor are
- * forbidden. The image is the source of truth; any UI-written file
- * lands on ephemeral pod disk, vanishes on restart, and replicates
- * inconsistently across replicas.
+ * pod): admin-side plugin/theme installs, the file editor, AND the
+ * indirect filesystem-write paths (translation packs, font installs,
+ * Site Health helper-file writes, etc.) are forbidden. The image is
+ * the source of truth; any UI-written file lands on ephemeral pod
+ * disk, vanishes on restart, and replicates inconsistently across
+ * replicas. `DISALLOW_INDIRECT_FILE_MODS` (WP 6.4+) is the third flag
+ * — `DISALLOW_FILE_MODS` covers the obvious installer paths but core
+ * still writes via `WP_Filesystem` for language packs, the font
+ * library, and Site Health probes; this closes those.
  *
- * Out-of-cluster (docker-compose, bare local): both are relaxed so a
- * developer can use Site Editor freely, install block plugins or
+ * Out-of-cluster (docker-compose, bare local): all three are relaxed
+ * so a developer can use Site Editor freely, install block plugins or
  * evaluation themes, and promote the resulting code into the image
  * and the resulting state into a snapshot via `wp fp snapshot`.
  * `KUBERNETES_SERVICE_HOST` can't appear in a local stack unless
@@ -128,13 +141,15 @@ if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'https' === $_SERVER['HTTP_X
  * up WP-Importer for the duration of snapshot apply. The plugin file
  * lives in the Job pod's writable overlay only; mu-plugin's apply
  * path deactivates the plugin before the Pod exits, so the next web
- * Pod sees a clean `wp_options.active_plugins`.
+ * Pod sees a clean `wp_options.active_plugins`. All three flags share
+ * the opt-out — WP-Importer's setup touches indirect-write paths too.
  */
 $fp_in_kubernetes = (bool) getenv( 'KUBERNETES_SERVICE_HOST' );
 $fp_allow_mods    = filter_var( getenv( 'FP_ALLOW_FILE_MODS' ), FILTER_VALIDATE_BOOLEAN );
 $fp_lockdown      = $fp_in_kubernetes && ! $fp_allow_mods;
 Config::define( 'DISALLOW_FILE_EDIT', $fp_lockdown );
 Config::define( 'DISALLOW_FILE_MODS', $fp_lockdown );
+Config::define( 'DISALLOW_INDIRECT_FILE_MODS', $fp_lockdown );
 
 /**
  * Out-of-cluster only: force `WP_Filesystem` to "direct" mode. WP's
